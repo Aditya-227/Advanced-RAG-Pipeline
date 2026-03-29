@@ -2,14 +2,14 @@
 # Advanced RAG Pipeline — CLEAN STABLE VERSION
 # ============================================================
 
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # --- Core ---
 langchain==0.2.16
 langchain-community==0.2.16
 langchain-groq==0.1.9
 langchain-huggingface==0.0.3
-
-llama-index-core==0.10.68
-llama-index-embeddings-huggingface==0.2.3
 
 # --- LLM ---
 groq==0.9.0
@@ -18,11 +18,11 @@ groq==0.9.0
 sentence-transformers==3.0.1
 transformers==4.41.2
 
-# --- Torch (CPU safe) ---
+# --- Torch (CPU) ---
 torch==2.9.1+cpu
 
 # --- Vector Store ---
-faiss-cpu==1.8.0
+faiss-cpu==1.13.2
 
 # --- Sparse Search ---
 rank-bm25==0.2.2
@@ -44,6 +44,7 @@ aiofiles==24.1.0
 # --- Utils ---
 numpy==1.26.4
 pandas==2.2.2
+scikit-learn==1.5.1
 pydantic==2.8.2
 pydantic-settings==2.4.0
 python-dotenv==1.0.1
