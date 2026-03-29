@@ -10,7 +10,7 @@ services:
     runtime: python
     rootDir: backend
     buildCommand: >
-      pip install --no-cache-dir torch==2.3.1+cpu
+      pip install --no-cache-dir torch==2.9.1+cpu
       --index-url https://download.pytorch.org/whl/cpu
       && pip install --no-cache-dir -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
