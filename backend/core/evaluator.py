@@ -153,9 +153,7 @@ class RAGASEvaluator:
 
         # RAGAS uses embeddings internally for answer_relevancy
         # We reuse the same HuggingFace model — no extra download
-        self._embeddings = HuggingFaceEmbeddings(
-            model_name=cfg.embedding_model_name,
-        )
+        self._embeddings = None
 
     def evaluate(
         self,
@@ -212,6 +210,10 @@ class RAGASEvaluator:
             "context_recall"    : None,
         }
 
+        # Lazy-load embeddings on first evaluation call
+        if self._embeddings is None:
+            from langchain_huggingface import HuggingFaceEmbeddings as HFE
+            self._embeddings = HFE(model_name=cfg.embedding_model_name)
         try:
             result = evaluate(
                 dataset=ragas_dataset,
