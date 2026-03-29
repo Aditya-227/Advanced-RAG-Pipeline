@@ -65,7 +65,11 @@ def get_cross_encoder() -> CrossEncoder:
         _cross_encoder = CrossEncoder(
             cfg.reranker_model_name,
             max_length=512,    # max tokens for query + chunk combined
+            device="cpu",
         )
+        
+        import gc
+        gc.collect()
         print("[Reranker] Cross-encoder loaded ✅")
     return _cross_encoder
 
