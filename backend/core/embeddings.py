@@ -40,7 +40,10 @@ def get_embedding_model() -> SentenceTransformer:
     if _model is None:
         cfg = get_settings()
         print(f"[Embeddings] Loading model: {cfg.embedding_model_name}")
-        _model = SentenceTransformer(cfg.embedding_model_name)
+        _model = SentenceTransformer(cfg.embedding_model_name, device="cpu",)
+        # Free any unused memory immediately after load
+        import gc
+        gc.collect()
         print("[Embeddings] Model loaded ✅")
     return _model
 
