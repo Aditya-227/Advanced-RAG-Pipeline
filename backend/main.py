@@ -54,29 +54,33 @@ from core.evaluator import RAGASEvaluator, get_evaluator
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Lazy startup — don't load any ML models at boot.
-    Models load on first request to stay under 512MB RAM.
-    """
     cfg = get_settings()
-    print("\n=== Advanced RAG Pipeline starting (lazy mode) ===")
+    print("\n=== Advanced RAG Pipeline starting ===")
 
-    # Only create directories — no model loading here
-    cfg.data_dir.mkdir(parents=True, exist_ok=True)
-    cfg.faiss_index_path.mkdir(parents=True, exist_ok=True)
-    cfg.bm25_index_path.mkdir(parents=True, exist_ok=True)
-    cfg.uploaded_pdfs_path.mkdir(parents=True, exist_ok=True)
-    cfg.metrics_path.mkdir(parents=True, exist_ok=True)
+    # Create all data directories — works on both /data (Render disk) and local
+    try:
+        for d in [cfg.data_dir, cfg.faiss_index_path, cfg.bm25_index_path,
+                  cfg.uploaded_pdfs_path, cfg.metrics_path]:
+            d.mkdir(parents=True, exist_ok=True)
+        print(f"[Startup] Data dir ready: {cfg.data_dir}")
+    except PermissionError as e:
+        print(f"[Startup] WARNING: Cannot write to {cfg.data_dir}: {e}")
+        print("[Startup] Falling back to /tmp/rag_data")
+        import os
+        os.environ["DATA_DIR"] = "/tmp/rag_data"
+        # Reload settings with new DATA_DIR
+        from core.config import get_settings as _gs
+        _gs.cache_clear()
+        cfg = _gs()
+        for d in [cfg.data_dir, cfg.faiss_index_path, cfg.bm25_index_path,
+                  cfg.uploaded_pdfs_path, cfg.metrics_path]:
+            d.mkdir(parents=True, exist_ok=True)
+        print(f"[Startup] Fallback dir ready: {cfg.data_dir}")
 
-    
-
-    # Mark chunker as not yet initialized — loaded on first upload
-    app.state.chunker = None
-
-    print("=== Startup complete (models load on first request) ===\n")
+    app.state.chunker = None   # loaded on first upload
+    print("=== Startup complete — models load on first request ===\n")
     yield
     print("\nShutting down...")
-
 
 # ── App initialization ────────────────────────────────────────────────────────
 
