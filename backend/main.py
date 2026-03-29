@@ -68,8 +68,7 @@ async def lifespan(app: FastAPI):
     cfg.uploaded_pdfs_path.mkdir(parents=True, exist_ok=True)
     cfg.metrics_path.mkdir(parents=True, exist_ok=True)
 
-    # Evaluator only creates log dir — safe, no model load
-    get_evaluator()
+    
 
     # Mark chunker as not yet initialized — loaded on first upload
     app.state.chunker = None
