@@ -19,7 +19,7 @@ sentence-transformers==3.0.1
 transformers==4.41.2
 
 # --- Torch (CPU safe) ---
-torch==2.3.1+cpu
+torch==2.9.1+cpu
 
 # --- Vector Store ---
 faiss-cpu==1.8.0
