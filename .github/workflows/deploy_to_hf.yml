@@ -1,0 +1,51 @@
+name: Deploy Backend to HuggingFace Spaces
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Install HuggingFace CLI
+        run: pip install huggingface_hub
+
+      - name: Push backend to HF Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python - <<'EOF'
+          import os
+          from huggingface_hub import HfApi
+
+          api = HfApi(token=os.environ["HF_TOKEN"])
+
+          # Replace with your actual HF username and space name
+          REPO_ID = "YOUR_HF_USERNAME/advanced-rag-backend"
+
+          api.upload_folder(
+              folder_path="backend",
+              repo_id=REPO_ID,
+              repo_type="space",
+              commit_message="Auto-deploy from GitHub",
+              ignore_patterns=["venv/*", "__pycache__/*", "*.pyc",
+                               "data/*", ".env", "test_*.py"],
+          )
+          print(f"✅ Deployed to https://huggingface.co/spaces/{REPO_ID}")
+          EOF
+```
+
+**Replace `YOUR_HF_USERNAME`** with your actual HuggingFace username on line:
+```
+REPO_ID = "YOUR_HF_USERNAME/advanced-rag-backend"
