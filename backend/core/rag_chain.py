@@ -212,11 +212,11 @@ class RAGChain:
             self.bm25_index,
             rrf_k=60,
         )
-        self.hyde_expander = get_hyde_expander()
-        self.reranker      = get_reranker()
+        self.hyde_expander = None
+        self.reranker      = None
 
         self._initialized = True
-        print("[RAGChain] Pipeline ready ✅")
+        print("[RAGChain] Pipeline ready ✅ (models load on first query)")
 
     def rebuild_indexes(self, chunks: List[Chunk]) -> None:
         """
@@ -287,6 +287,12 @@ class RAGChain:
         top_n = top_n_rerank    or cfg.rerank_top_n
         latency: Dict[str, float] = {}
 
+        # Lazy-load components on first query
+        if self.hyde_expander is None:
+            self.hyde_expander = get_hyde_expander()
+        if self.reranker is None:
+            self.reranker = get_reranker()
+          
         # ── Stage 1: HyDE query expansion ────────────────────────────────────
         t0 = time.time()
 
