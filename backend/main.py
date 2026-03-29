@@ -55,40 +55,27 @@ from core.evaluator import RAGASEvaluator, get_evaluator
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Code here runs ONCE at startup (before any requests).
-    Code after `yield` runs at shutdown.
-
-    We use this to:
-      - Load FAISS and BM25 indexes from disk (if they exist)
-      - Load all ML models into memory
-      - Initialize the global RAGChain singleton
-
-    WHY NOT @app.on_event("startup")?
-      FastAPI deprecated on_event in v0.93. Lifespan is the modern way
-      and is compatible with pytest's async test client.
+    Lazy startup — don't load any ML models at boot.
+    Models load on first request to stay under 512MB RAM.
     """
     cfg = get_settings()
-    print("\n" + "=" * 50)
-    print("Advanced RAG Pipeline — Starting up")
-    print("=" * 50)
+    print("\n=== Advanced RAG Pipeline starting (lazy mode) ===")
 
-    # Initialize RAG chain (loads models, tries to load indexes)
-    chain = get_rag_chain()
-    chain.initialize()
+    # Only create directories — no model loading here
+    cfg.data_dir.mkdir(parents=True, exist_ok=True)
+    cfg.faiss_index_path.mkdir(parents=True, exist_ok=True)
+    cfg.bm25_index_path.mkdir(parents=True, exist_ok=True)
+    cfg.uploaded_pdfs_path.mkdir(parents=True, exist_ok=True)
+    cfg.metrics_path.mkdir(parents=True, exist_ok=True)
 
-    # Initialize evaluator (creates log directory)
-    evaluator = get_evaluator()
+    # Evaluator only creates log dir — safe, no model load
+    get_evaluator()
 
-    # Initialize chunker (loads embedding model for semantic chunking)
-    app.state.chunker = SemanticChunker()
+    # Mark chunker as not yet initialized — loaded on first upload
+    app.state.chunker = None
 
-    print("=" * 50)
-    print("Startup complete — API is ready")
-    print("=" * 50 + "\n")
-
-    yield  # API is running
-
-    # Shutdown cleanup (if needed)
+    print("=== Startup complete (models load on first request) ===\n")
+    yield
     print("\nShutting down...")
 
 
@@ -273,7 +260,10 @@ async def upload_pdf(file: UploadFile = File(...)):
         f.write(content)
 
     print(f"[Upload] Saved: {file_path} ({len(content) / 1024:.1f} KB)")
-
+    # ── Lazy-load chunker on first upload ─────────────────────────────────────
+    if app.state.chunker is None:
+        print("[Upload] Loading SemanticChunker for first time...")
+        app.state.chunker = SemanticChunker()
     # ── Ingest ALL PDFs in upload directory ───────────────────────────────────
     chunker = app.state.chunker
     all_chunks = []
