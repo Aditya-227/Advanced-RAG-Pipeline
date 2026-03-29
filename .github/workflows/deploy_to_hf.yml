@@ -32,7 +32,7 @@ jobs:
           api = HfApi(token=os.environ["HF_TOKEN"])
 
           # Replace with your actual HF username and space name
-          REPO_ID = "YOUR_HF_USERNAME/advanced-rag-backend"
+          REPO_ID = "Adity227/Advanced-RAG-Backend"
 
           api.upload_folder(
               folder_path="backend",
@@ -44,8 +44,4 @@ jobs:
           )
           print(f"✅ Deployed to https://huggingface.co/spaces/{REPO_ID}")
           EOF
-```
 
-**Replace `YOUR_HF_USERNAME`** with your actual HuggingFace username on line:
-```
-REPO_ID = "YOUR_HF_USERNAME/advanced-rag-backend"
