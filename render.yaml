@@ -1,0 +1,42 @@
+# render.yaml
+# Optional: place this in the ROOT of your repo.
+# Render reads it automatically and pre-fills all settings.
+# You still need to add GROQ_API_KEY manually in the dashboard
+# (never put secrets in this file).
+
+services:
+  - type: web
+    name: advanced-rag-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: >
+      pip install --no-cache-dir torch==2.3.1+cpu
+      --index-url https://download.pytorch.org/whl/cpu
+      && pip install --no-cache-dir -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: GROQ_MODEL_NAME
+        value: llama-3.1-70b-versatile
+      - key: EMBEDDING_MODEL_NAME
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: RERANKER_MODEL_NAME
+        value: cross-encoder/ms-marco-MiniLM-L-6-v2
+      - key: RETRIEVAL_TOP_K
+        value: "10"
+      - key: RERANK_TOP_N
+        value: "4"
+      - key: DATA_DIR
+        value: /data
+      - key: LLM_MAX_TOKENS
+        value: "1024"
+      - key: LLM_TEMPERATURE
+        value: "0.1"
+      - key: PYTHONDONTWRITEBYTECODE
+        value: "1"
+      # Add GROQ_API_KEY in the Render dashboard — never here
+    disk:
+      name: rag-data
+      mountPath: /data
+      sizeGB: 1
+    healthCheckPath: /health

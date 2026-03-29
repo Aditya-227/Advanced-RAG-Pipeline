@@ -1,0 +1,53 @@
+# ============================================================
+# .gitignore — Advanced RAG Pipeline
+# ============================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# --- Environment variables (NEVER commit these) ---
+.env
+*.env
+!.env.example
+
+# --- Data (indices are large binary files, don't commit them) ---
+backend/data/
+data/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Model cache (HuggingFace downloads here) ---
+~/.cache/huggingface/
+.cache/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Test artifacts ---
+.pytest_cache/
+htmlcov/
+.coverage

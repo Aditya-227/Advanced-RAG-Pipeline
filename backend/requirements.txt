@@ -1,0 +1,52 @@
+# ============================================================
+# Advanced RAG Pipeline — CLEAN STABLE VERSION
+# ============================================================
+
+# --- Core ---
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-groq==0.1.9
+langchain-huggingface==0.0.3
+
+llama-index-core==0.10.68
+llama-index-embeddings-huggingface==0.2.3
+
+# --- LLM ---
+groq==0.9.0
+
+# --- Embeddings ---
+sentence-transformers==3.0.1
+transformers==4.41.2
+
+# --- Torch (CPU safe) ---
+torch==2.3.1+cpu
+
+# --- Vector Store ---
+faiss-cpu==1.8.0
+
+# --- Sparse Search ---
+rank-bm25==0.2.2
+
+# --- PDF ---
+pymupdf==1.24.9
+pypdf==4.3.1
+
+# --- Evaluation ---
+ragas==0.1.14
+datasets==2.20.0
+
+# --- Backend ---
+fastapi==0.112.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+aiofiles==24.1.0
+
+# --- Utils ---
+numpy==1.26.4
+pandas==2.2.2
+pydantic==2.8.2
+pydantic-settings==2.4.0
+python-dotenv==1.0.1
+httpx==0.27.0
+tqdm==4.66.5
+joblib==1.4.2
